@@ -39,10 +39,18 @@ bool tests::StackTest::TestFull() {
 
         try {
             cerr << "Making an error" << endl;
-            s.top();
+            int x = s.top();
+            cerr << "can't happen" << x << endl;
         } catch (out_of_range& e) {
             cerr << "Got an expected error" << endl;
             normalErrorCount++;
+        }
+
+        s.push(100);
+        s.push(101);
+
+        if ( s.depth() != 2 ) {
+            unexpectedErrorsCount++;
         }
 
     } catch (out_of_range& e) {

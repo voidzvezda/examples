@@ -7,14 +7,19 @@
 
 #include <cstdint>
 #include <stdexcept>
+#include <memory>
 
 namespace voidstl {
 
     template <typename Tp>
     class Stack {
     private:
+
+        struct Element;
+        typedef std::shared_ptr<Element> ElementPtr;
+
         struct Element {
-            Element(Tp *valuePtr, Element *link = nullptr) : valuePtr(valuePtr), link(link) {
+            Element(Tp *valuePtr, ElementPtr link = nullptr) : valuePtr(valuePtr), link(link) {
             }
 
             ~Element() {
@@ -24,12 +29,12 @@ namespace voidstl {
             }
 
             Tp* valuePtr;
-            Element* link;
-
+            ElementPtr link;
         };
 
+
     private:
-        Element* topPtr;
+        ElementPtr topPtr;
         size_t size;
 
     public:
@@ -40,18 +45,16 @@ namespace voidstl {
         }
 
         void push( const Tp& newValue ) {
-            Element* newElementPtr =  new Element( new Tp(newValue), topPtr );
+            ElementPtr newElementPtr( new Element( new Tp(newValue), topPtr ) );
             topPtr = newElementPtr;
             size++;
         }
 
         Tp pop() {
             if ( topPtr ) {
-                Element* topElementPtr = topPtr;
+                Tp value = *topPtr->valuePtr;
                 topPtr = topPtr->link;
                 size--;
-                Tp value = *topElementPtr->valuePtr;
-                delete topElementPtr;
                 return value;
             } else {
                 throw std::out_of_range( "pop(): Stack is empty" );
