@@ -92,6 +92,13 @@ bool tests::StackTest::TestFull() {
             nodefctr.pop();
         }
 
+        {
+            Stack<NoDefaultCtrClass> nodefctr;
+            nodefctr.emplace( 1, 1.0, NoCopyCtrClass() );
+            auto& x = nodefctr.top();
+            const auto& cx = nodefctr.top();
+            nodefctr.pop();
+        }
 
     } catch (out_of_range& e) {
         cerr << "Got an unexpected error: " << e.what() << endl;

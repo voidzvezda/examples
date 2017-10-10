@@ -19,7 +19,10 @@ namespace tests {
         struct NoDefaultCtrClass {
             NoDefaultCtrClass() = delete;
             explicit NoDefaultCtrClass(int){}
+            explicit NoDefaultCtrClass(int, double){}
+            explicit NoDefaultCtrClass(int, double, NoCopyCtrClass&&){}
         };
+
     };
 }
 

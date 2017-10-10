@@ -28,6 +28,10 @@ namespace voidstl {
             explicit Element(Tp&& value, ElementPtr link) noexcept
                     : value( std::move(value) ), link(link) {}
 
+            template<typename... Args>
+            explicit Element(ElementPtr link, Args&&... args) noexcept
+            : value( std::forward<Args>(args)... ), link(link){}
+
             Tp value;
             const ElementPtr link;
         };
@@ -56,6 +60,11 @@ namespace voidstl {
 
         void push( Tp&& newValue ) {
             push( std::make_shared<Element>( std::move(newValue), topPtr ) );
+        }
+
+        template<typename... Args>
+        void emplace( Args&&... args ) {
+            push( std::make_shared<Element>( topPtr, std::forward<Args>(args)... ) );
         }
 
         void pop() {
