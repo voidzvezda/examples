@@ -14,43 +14,48 @@ namespace voidstl {
     /*
      * Simple Stack example.
      */
-    template< typename Tp, class Dtr = std::default_delete<Tp> >
+    template< typename Tp >
     class Stack {
-    private:
+    protected:
 
         struct Element;
         using ElementPtr = std::shared_ptr<Element>;
-        using TpPtr      = std::unique_ptr<Tp, Dtr>;
 
         struct Element {
-            explicit Element(TpPtr&& valuePtr, ElementPtr link = nullptr)
-                : valuePtr( move(valuePtr) ), link(link) {}
+            explicit Element(const Tp& value, ElementPtr link) noexcept
+                    : value( value ), link(link) {}
 
-            TpPtr valuePtr;
+            explicit Element(Tp&& value, ElementPtr link) noexcept
+                    : value( std::move(value) ), link(link) {}
+
+            Tp value;
             const ElementPtr link;
         };
 
-
-    private:
         ElementPtr topPtr;
         size_t size;
 
+    protected:
+        void push( ElementPtr newElementPtr ) {
+            topPtr = newElementPtr;
+            size++;
+        }
+
     public:
-        Stack() : topPtr( nullptr ), size(0) {}
+        Stack() noexcept
+            : topPtr( nullptr ), size(0) {}
+
 
         size_t depth() const {
             return size;
         }
 
         void push( const Tp& newValue ) {
-            ElementPtr newElementPtr(
-                    new Element(
-                            TpPtr( new Tp(newValue) ),
-                            topPtr
-                    )
-            );
-            topPtr = newElementPtr;
-            size++;
+            push( std::make_shared<Element>( newValue, topPtr ) );
+        }
+
+        void push( Tp&& newValue ) {
+            push( std::make_shared<Element>( std::move(newValue), topPtr ) );
         }
 
         void pop() {
@@ -64,7 +69,7 @@ namespace voidstl {
 
         const Tp& top() const {
             if ( topPtr ) {
-                return *topPtr->valuePtr;
+                return topPtr->value;
             } else {
                 throw std::out_of_range( "top(): Stack is empty" );
             }

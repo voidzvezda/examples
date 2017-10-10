@@ -9,6 +9,17 @@ namespace tests {
     class StackTest {
     public:
         static bool TestFull();
+    private:
+        struct NoCopyCtrClass {
+            NoCopyCtrClass() = default;
+            NoCopyCtrClass( const NoCopyCtrClass& ) = delete;
+            NoCopyCtrClass( NoCopyCtrClass&& ) noexcept {}
+        };
+
+        struct NoDefaultCtrClass {
+            NoDefaultCtrClass() = delete;
+            explicit NoDefaultCtrClass(int){}
+        };
     };
 }
 

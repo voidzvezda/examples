@@ -76,6 +76,23 @@ bool tests::StackTest::TestFull() {
         const auto& sf = s;
         sf.top();
 
+        {
+            Stack<NoCopyCtrClass> nocpys;
+            nocpys.push( NoCopyCtrClass() );
+            auto& x = nocpys.top();
+            const auto& cx = nocpys.top();
+            nocpys.pop();
+        }
+
+        {
+            Stack<NoDefaultCtrClass> nodefctr;
+            nodefctr.push( NoDefaultCtrClass(1) );
+            auto& x = nodefctr.top();
+            const auto& cx = nodefctr.top();
+            nodefctr.pop();
+        }
+
+
     } catch (out_of_range& e) {
         cerr << "Got an unexpected error: " << e.what() << endl;
         unexpectedErrorsCount++;
