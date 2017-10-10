@@ -18,16 +18,14 @@ namespace voidstl {
     class Stack {
     private:
 
-        struct Element;
-        typedef std::shared_ptr<Element> ElementPtr;
-        typedef std::unique_ptr<Tp, Dtr> TpPtr;
+        class Element;
+        using ElementPtr = std::shared_ptr<Element>;
+        using TpPtr      = std::unique_ptr<Tp, Dtr>;
 
         class Element {
         public:
             explicit Element(TpPtr&& valuePtr, ElementPtr link = nullptr)
                 : valuePtr( move(valuePtr) ), link(link) {}
-
-            ~Element() {}
 
             const Tp& getValue() const {
                 return *valuePtr;
