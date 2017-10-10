@@ -11,25 +11,35 @@
 
 namespace voidstl {
 
-    template <typename Tp>
+    /*
+     * Simple Stack example.
+     */
+    template< typename Tp, class Dtr = std::default_delete<Tp> >
     class Stack {
     private:
 
         struct Element;
         typedef std::shared_ptr<Element> ElementPtr;
+        typedef std::unique_ptr<Tp, Dtr> TpPtr;
 
-        struct Element {
-            Element(Tp *valuePtr, ElementPtr link = nullptr) : valuePtr(valuePtr), link(link) {
+        class Element {
+        public:
+            explicit Element(TpPtr&& valuePtr, ElementPtr link = nullptr)
+                : valuePtr( move(valuePtr) ), link(link) {}
+
+            ~Element() {}
+
+            const Tp& getValue() const {
+                return *valuePtr;
             }
 
-            ~Element() {
-                if (valuePtr) {
-                    delete valuePtr;
-                }
+            const ElementPtr& getLink() const {
+                return link;
             }
 
-            Tp* valuePtr;
-            ElementPtr link;
+        private:
+            const TpPtr valuePtr;
+            const ElementPtr link;
         };
 
 
@@ -45,15 +55,20 @@ namespace voidstl {
         }
 
         void push( const Tp& newValue ) {
-            ElementPtr newElementPtr( new Element( new Tp(newValue), topPtr ) );
+            ElementPtr newElementPtr(
+                    new Element(
+                            TpPtr( new Tp(newValue) ),
+                            topPtr
+                    )
+            );
             topPtr = newElementPtr;
             size++;
         }
 
         Tp pop() {
             if ( topPtr ) {
-                Tp value = *topPtr->valuePtr;
-                topPtr = topPtr->link;
+                Tp value = topPtr->getValue(); // Save value for return.
+                topPtr = topPtr->getLink(); // Change 'top' to the next element in the stack.
                 size--;
                 return value;
             } else {
@@ -61,11 +76,13 @@ namespace voidstl {
             }
         }
 
-        const Tp& top() const {
+        // Seems unsafe: reference can become invalid.
+        // Should change to return the copy of a value?
+        const Tp& showTop() const {
             if ( topPtr ) {
-                return *topPtr->valuePtr;
+                return topPtr->getValue();
             } else {
-                throw std::out_of_range( "top(): Stack is empty" );
+                throw std::out_of_range( "showTop(): Stack is empty" );
             }
         }
 

@@ -20,8 +20,8 @@ bool tests::StackTest::TestFull() {
         s.push(2);
         s.push(1);
 
-        if ( s.top() != 1 ) {
-            cerr << "top() error" << endl;
+        if (s.showTop() != 1 ) {
+            cerr << "showTop() error" << endl;
             unexpectedErrorsCount++;
         }
 
@@ -39,7 +39,7 @@ bool tests::StackTest::TestFull() {
 
         try {
             cerr << "Making an error" << endl;
-            int x = s.top();
+            int x = s.showTop();
             cerr << "can't happen" << x << endl;
         } catch (out_of_range& e) {
             cerr << "Got an expected error" << endl;
