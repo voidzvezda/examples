@@ -10,40 +10,60 @@ using namespace voidstl;
 using namespace std;
 
 bool tests::StackTest::TestFull() {
-    int normalErrorCount      = 0;
+
+    int expectedErrorsCount   = 0;
+    int gotNormalErrorCount   = 0;
     int unexpectedErrorsCount = 0;
+
     try {
         Stack<int> s;
-        s.push(5);
-        s.push(4);
-        s.push(3);
-        s.push(2);
-        s.push(1);
 
-        if (s.showTop() != 1 ) {
-            cerr << "showTop() error" << endl;
+        for ( int i = 5; i > 0; --i ) {
+            s.push(i);
+        }
+
+        if (s.top() != 1 ) {
+            cerr << "top() error" << endl;
             unexpectedErrorsCount++;
         }
 
-        for ( int i = 0; i < 5; i++ ) {
-            cerr << "pop " << s.pop() << endl;
-        }
+        for ( int i = 1; i < 6; i++ ) {
+            int& x = s.top();
+            if ( x != i ) {
+                unexpectedErrorsCount++;
+            }
 
+            x = 13;
+            if ( s.top() != 13 ) {
+                unexpectedErrorsCount++;
+            }
+
+            const int& cx = s.top();
+            cerr << cx;
+
+            s.pop();
+            cerr << " pop " << " ";
+        }
+        cerr << endl;
+
+        expectedErrorsCount++;
         try {
             cerr << "Making an error" << endl;
             s.pop();
         } catch (out_of_range& e) {
-            cerr << "Got an expected error" << endl;
-            normalErrorCount++;
+            cerr << "   Got an expected error" << endl;
+            gotNormalErrorCount++;
         }
 
+        expectedErrorsCount++;
         try {
             cerr << "Making an error" << endl;
-            int x = s.showTop();
+            int x = s.top();
             cerr << "can't happen" << x << endl;
+            unexpectedErrorsCount++;
         } catch (out_of_range& e) {
-            cerr << "Got an expected error" << endl;
-            normalErrorCount++;
+            cerr << "   Got an expected error" << endl;
+            gotNormalErrorCount++;
         }
 
         s.push(100);
@@ -53,14 +73,21 @@ bool tests::StackTest::TestFull() {
             unexpectedErrorsCount++;
         }
 
+        const auto& sf = s;
+        sf.top();
+
     } catch (out_of_range& e) {
         cerr << "Got an unexpected error: " << e.what() << endl;
         unexpectedErrorsCount++;
     }
 
-    if ( normalErrorCount == 2 && unexpectedErrorsCount == 0 ) {
+    cerr << unexpectedErrorsCount << " " << gotNormalErrorCount << " " << expectedErrorsCount << endl;
+
+    if ( gotNormalErrorCount == expectedErrorsCount && unexpectedErrorsCount == 0 ) {
+        cerr << "[ Test OK ]" << endl;
         return true;
     } else {
+        cerr << "[ Test FAILED ]" << endl;
         return false;
     }
 }

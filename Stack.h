@@ -18,25 +18,15 @@ namespace voidstl {
     class Stack {
     private:
 
-        class Element;
+        struct Element;
         using ElementPtr = std::shared_ptr<Element>;
         using TpPtr      = std::unique_ptr<Tp, Dtr>;
 
-        class Element {
-        public:
+        struct Element {
             explicit Element(TpPtr&& valuePtr, ElementPtr link = nullptr)
                 : valuePtr( move(valuePtr) ), link(link) {}
 
-            const Tp& getValue() const {
-                return *valuePtr;
-            }
-
-            const ElementPtr& getLink() const {
-                return link;
-            }
-
-        private:
-            const TpPtr valuePtr;
+            TpPtr valuePtr;
             const ElementPtr link;
         };
 
@@ -63,25 +53,25 @@ namespace voidstl {
             size++;
         }
 
-        Tp pop() {
+        void pop() {
             if ( topPtr ) {
-                Tp value = topPtr->getValue(); // Save value for return.
-                topPtr = topPtr->getLink(); // Change 'top' to the next element in the stack.
+                topPtr = topPtr->link; // Change 'top' to the next element in the stack.
                 size--;
-                return value;
             } else {
                 throw std::out_of_range( "pop(): Stack is empty" );
             }
         }
 
-        // Seems unsafe: reference can become invalid.
-        // Should change to return the copy of a value?
-        const Tp& showTop() const {
+        const Tp& top() const {
             if ( topPtr ) {
-                return topPtr->getValue();
+                return *topPtr->valuePtr;
             } else {
-                throw std::out_of_range( "showTop(): Stack is empty" );
+                throw std::out_of_range( "top(): Stack is empty" );
             }
+        }
+
+        Tp& top() {
+            return const_cast<Tp&>( static_cast<const Stack*>(this)->top() );
         }
 
     };
