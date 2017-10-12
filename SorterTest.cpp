@@ -28,7 +28,7 @@ bool tests::SorterTest::TestFull( std::function<void(std::vector<T>&)> sorterFun
     }
 
 
-    for ( int tc = 0; tc < 200; tc++ ) {
+    for ( int tc = 0; tc < 1000; tc++ ) {
         std::vector<int> etalon = generate<int>();
         bool res = TestOne( sorterFun, etalon );
         if ( !res ) {

@@ -30,7 +30,72 @@ struct Sorter {
         QSortHelper<T>::qsortRecursive( vec, 0, vec.size() - 1 );
     }
 
+    template<typename T>
+    static void btree(std::vector<T> &vec) {
+        TreeHelper<T> helper;
+        auto& bst = helper.bst;
+        for ( const auto& val : vec ) {
+            bst.Add( val );
+        }
+        std::vector<T> v;
+        v.reserve(vec.size());
+        bst.traverseLeft(v);
+
+        vec = v;
+    }
+
 private:
+
+    template<typename T>
+    struct TreeHelper {
+
+        struct Node;
+        using NodePtr = Node*;
+        struct Node {
+            Node( const T& value ) : left(nullptr), right(nullptr), value(value) {}
+            NodePtr left;
+            NodePtr right;
+            T value;
+        };
+
+        class BinarySearchTree {
+        public:
+            BinarySearchTree() : root( nullptr ) {}
+            void Add( const T& value ) {
+                root = Add( root, value );
+            }
+
+            void traverseLeft(std::vector<T>& v) {
+                traverseLeft(root, v);
+            }
+
+        private:
+            NodePtr Add( NodePtr node, const T& value ) {
+                if ( !node ) {
+                    NodePtr newNode( new Node( value ) );
+                    return newNode;
+                }
+
+                if ( value >= node->value ) {
+                    node->right = Add( node->right, value );
+                } else {
+                    node->left  = Add( node->left, value );
+                }
+                return node;
+            }
+
+            void traverseLeft( NodePtr node, std::vector<T>& v ) {
+                if ( node ) {
+                    traverseLeft( node->left, v );
+                    v.push_back( node->value );
+                    traverseLeft( node->right, v );
+                }
+            }
+            NodePtr root;
+        };
+
+        BinarySearchTree bst;
+    };
 
     template< typename T >
     struct QSortHelper {

@@ -14,7 +14,8 @@ int main() {
 
     //tests::StackTest::TestFull();
     //tests::SorterTest::TestFull<int>( &Sorter::bubble<int> );
-    tests::SorterTest::TestFull<int>( &Sorter::quick<int> );
+    //tests::SorterTest::TestFull<int>( &Sorter::quick<int> );
+    tests::SorterTest::TestFull<int>( &Sorter::btree<int> );
 
     cerr << "END" << endl;
     return 0;
