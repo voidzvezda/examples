@@ -3,5 +3,5 @@ project(examples)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.cpp Stack.h StackTest.cpp StackTest.h)
+set(SOURCE_FILES main.cpp Stack.h StackTest.cpp StackTest.h Sorter.h SorterTest.cpp SorterTest.h test.h)
 add_executable(examples ${SOURCE_FILES})
