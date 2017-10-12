@@ -33,21 +33,28 @@ struct Sorter {
     template<typename T>
     static void btree(std::vector<T> &vec) {
         TreeHelper<T> helper;
-        auto& bst = helper.bst;
-        for ( const auto& val : vec ) {
-            bst.Add( val );
-        }
-        std::vector<T> v;
-        v.reserve(vec.size());
-        bst.traverseLeft(v);
 
-        vec = v;
+        for ( const auto& val : vec ) {
+            helper.bst.Add( val );
+        }
+
+        std::vector<T> sortedVector;
+        sortedVector.reserve(vec.size());
+
+        helper.bst.traverseMiddle(
+            [&](const T& x) {
+                sortedVector.push_back( x );
+            }
+        );
+
+        vec = sortedVector;
     }
 
 private:
 
     template<typename T>
     struct TreeHelper {
+        TreeHelper() = default;
 
         struct Node;
         using NodePtr = Node*;
@@ -65,11 +72,13 @@ private:
                 root = Add( root, value );
             }
 
-            void traverseLeft(std::vector<T>& v) {
-                traverseLeft(root, v);
+            template<typename Ft>
+            void traverseMiddle(Ft visit) {
+                traverseMiddle(root, visit);
             }
 
         private:
+
             NodePtr Add( NodePtr node, const T& value ) {
                 if ( !node ) {
                     NodePtr newNode( new Node( value ) );
@@ -84,11 +93,12 @@ private:
                 return node;
             }
 
-            void traverseLeft( NodePtr node, std::vector<T>& v ) {
+            template<typename Ft>
+            void traverseMiddle( NodePtr node, Ft visit ) {
                 if ( node ) {
-                    traverseLeft( node->left, v );
-                    v.push_back( node->value );
-                    traverseLeft( node->right, v );
+                    traverseMiddle( node->left, visit );
+                    visit( node->value );
+                    traverseMiddle( node->right, visit );
                 }
             }
             NodePtr root;
